@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#0d0d1a" />
+  <title>Infinity Puzzle ♾️</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ── Header ─────────────────────────────────────────────── -->
+  <header id="header">
+    <div id="logo">♾️ Infinity</div>
+
+    <div id="score-panel">
+      <div id="score">0</div>
+      <div id="score-label">SCORE</div>
+    </div>
+
+    <div id="header-right">
+      <div id="high-score-row">
+        <span id="high-score-label">BEST</span>
+        <span id="high-score">0</span>
+      </div>
+      <div id="level-row">
+        <span id="level-label">LVL</span>
+        <span id="level">1</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ── Toolbar ────────────────────────────────────────────── -->
+  <div id="toolbar">
+    <button class="btn btn-secondary" id="new-game-btn">🔄 New</button>
+    <button class="btn btn-icon btn-secondary" id="mute-btn" aria-label="Toggle sound">🔊</button>
+  </div>
+
+  <!-- ── Combo message area ─────────────────────────────────── -->
+  <div id="combo-area">
+    <div id="combo" class="hidden"></div>
+    <div id="combo-msg"></div>
+  </div>
+
+  <!-- ── Game Canvas ────────────────────────────────────────── -->
+  <div id="canvas-wrapper">
+    <canvas id="game-canvas"></canvas>
+  </div>
+
+</div><!-- /#app -->
+
+<!-- ── Level-up overlay (non-blocking) ───────────────────────── -->
+<div id="level-up" class="hidden" role="status" aria-live="polite"></div>
+
+<!-- ── New High Score Banner ─────────────────────────────────── -->
+<div id="new-high-banner" class="hidden" role="status" aria-live="polite">
+  🏆 NEW HIGH SCORE! 🏆
+</div>
+
+<!-- ── Start Screen ───────────────────────────────────────────── -->
+<div id="start-screen" class="overlay" role="dialog" aria-label="Start screen">
+  <div class="overlay-card">
+    <div id="start-title">♾️ Infinity<br>Puzzle</div>
+    <div id="start-subtitle">The endless match-3 madness</div>
+
+    <div class="start-high-row">
+      <span>🏆 Best:</span>
+      <span id="start-high-score">0</span>
+    </div>
+
+    <div class="how-to-play">
+      <h3>How to Play</h3>
+      <ul>
+        <li>Tap a block to select it</li>
+        <li>Tap an adjacent block to swap</li>
+        <li>Match 3+ same-colored blocks</li>
+        <li>Chain matches for combos &amp; big points</li>
+        <li>💣 Bombs clear nearby blocks</li>
+        <li>🌈 Rainbow matches anything!</li>
+      </ul>
+    </div>
+
+    <button class="btn btn-primary" id="play-btn" style="width:100%;font-size:20px;padding:14px;">
+      🚀 PLAY
+    </button>
+  </div>
+</div>
+
+<!-- ── Game Over Screen ───────────────────────────────────────── -->
+<div id="game-over" class="overlay hidden" role="dialog" aria-label="Game over">
+  <div class="overlay-card">
+    <div id="game-over-title">💀 Game Over!</div>
+    <div id="game-over-msg">The blocks have won… this time.</div>
+
+    <div class="score-summary">
+      <div class="score-box">
+        <div class="score-box-label">Score</div>
+        <div class="score-box-value gold" id="final-score">0</div>
+      </div>
+      <div class="score-box">
+        <div class="score-box-label">Best</div>
+        <div class="score-box-value purple" id="final-high">0</div>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" id="replay-btn" style="width:100%;font-size:18px;padding:14px;">
+      🔄 Play Again
+    </button>
+  </div>
+</div>
+
+<!-- ── Scripts (order matters — dependencies first) ──────────── -->
+<script src="js/utils.js"></script>
+<script src="js/block.js"></script>
+<script src="js/board.js"></script>
+<script src="js/score.js"></script>
+<script src="js/levels.js"></script>
+<script src="js/particles.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/renderer.js"></script>
+<script src="js/input.js"></script>
+<script src="js/game.js"></script>
+
+</body>
+</html>
