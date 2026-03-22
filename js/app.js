@@ -204,7 +204,7 @@ const App = (() => {
   function _renderSettings() {
     const root = document.getElementById('screen-settings');
     if (!root) return;
-    const s = Settings.get();
+    const s = Settings.getAll();
     root.innerHTML = `
       <div class="settings-wrap">
         <div class="mode-header">
@@ -307,7 +307,7 @@ const App = (() => {
     ];
 
     const unlocks  = Storage.getUnlocks();
-    const equipped = Storage.getEquipped();
+    const equipped = Storage.getHubEquipped();
     const ownedAll = [...(unlocks.themes || []), ...(unlocks.particles || []), ...(unlocks.borders || [])];
 
     root.innerHTML = `
@@ -352,9 +352,9 @@ const App = (() => {
         }
 
         // Equip
-        const e = Storage.getEquipped();
+        const e = Storage.getHubEquipped();
         e[type] = id;
-        Storage.saveEquipped(e);
+        Storage.saveHubEquipped(e);
         _applyCosmetics();
         _renderShop(); // refresh
         _updateDustDisplay();
@@ -365,7 +365,7 @@ const App = (() => {
   // ── Cosmetics ────────────────────────────────────────────────────
 
   function _applyCosmetics() {
-    const e = Storage.getEquipped();
+    const e = Storage.getHubEquipped();
     document.body.dataset.theme     = e.theme     || 'default';
     document.body.dataset.particles = e.particles || 'default';
     document.body.dataset.border    = e.border    || 'none';
@@ -393,8 +393,7 @@ const App = (() => {
   // ── Init ─────────────────────────────────────────────────────────
 
   function init() {
-    Storage.init();
-    Settings.load();
+    // GameStorage auto-initializes on construction; Settings/Daily are stateless
     _applyCosmetics();
     if (Settings.isColorblind()) document.body.classList.add('colorblind');
 

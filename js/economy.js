@@ -21,23 +21,20 @@ const Economy = (() => {
   };
 
   function getDust() {
-    return Storage.getDust();
+    return GameStorage.getDust();
   }
 
   function addDust(amount) {
-    const current = getDust();
     const rounded = Math.max(0, Math.round(amount));
-    Storage.setDust(current + rounded);
-    _notifyListeners(current + rounded);
+    const newVal  = GameStorage.addDust(rounded);
+    _notifyListeners(newVal);
     return rounded;
   }
 
   function spendDust(amount) {
-    const current = getDust();
-    if (current < amount) return false;
-    Storage.setDust(current - amount);
-    _notifyListeners(current - amount);
-    return true;
+    const ok = GameStorage.spendDust(amount);
+    if (ok) _notifyListeners(GameStorage.getDust());
+    return ok;
   }
 
   // ── Change listeners (for UI updates) ───────────────────────────
