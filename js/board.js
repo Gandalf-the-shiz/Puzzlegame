@@ -92,7 +92,7 @@ class Board {
     const a = this.get(r1, c1);
     const b = this.get(r2, c2);
     if (!a || !b) return false;
-    if (!a.canMove() && !b.canMove()) return false;
+    if (!a.canMove() || !b.canMove()) return false;
     if (!this.isAdjacent(r1, c1, r2, c2)) return false;
 
     this.grid[r1][c1] = b;

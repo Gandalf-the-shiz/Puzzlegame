@@ -107,7 +107,7 @@ class LeaderboardManager {
     const trimmed = entries.slice(0, LB_MAX);
     GameStorage.saveLeaderboard(modeId, trimmed);
 
-    const rank = trimmed.indexOf(full) + 1;
+    const rank = trimmed.findIndex(e => e === full) + 1;
     return rank > 0 ? rank : 0;
   }
 

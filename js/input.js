@@ -133,10 +133,17 @@ class InputHandler {
     if (now - this._lastTapTime < this.THROTTLE_MS) return;
     this._lastTapTime = now;
 
+    const nr = r + dr;
+    const nc = c + dc;
+
+    // Bounds check: ensure the target cell is within the grid
+    if (nr < 0 || nr >= this.renderer.board.rows ||
+        nc < 0 || nc >= this.renderer.board.cols) return;
+
     // Emit two taps: origin and adjacent
     if (this.onCellTap) {
       this.onCellTap(r, c);
-      this.onCellTap(r + dr, c + dc);
+      this.onCellTap(nr, nc);
     }
   }
 
