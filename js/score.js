@@ -1,182 +1,140 @@
 /**
- * score.js — Scoring, combo tracking, and localStorage persistence
+ * score.js — Scoring, combo tracking, Wizard Dust, and persistence via GameStorage
  */
 
 'use strict';
 
-const LS_HIGH_SCORE = 'infinityPuzzle_highScore';
-const LS_BEST_LEVEL = 'infinityPuzzle_bestLevel';
-const LS_SOUND_ON   = 'infinityPuzzle_soundOn';
+// Dust earned per 100 score points
+const DUST_PER_100_SCORE = 1;
+// Dust earned per level-up
+const DUST_PER_LEVEL     = 5;
+// Dust bonus for completing the daily challenge
+const DUST_DAILY_BONUS   = 25;
 
 class ScoreManager {
-  constructor() {
+  /**
+   * @param {'endless'|'daily'|'hardcore'} mode
+   */
+  constructor(mode = 'endless') {
+    this.mode      = mode;
     this.score     = 0;
-    this.highScore = this._loadHighScore();
-    this.bestLevel = this._loadBestLevel();
-    this.combo     = 0;        // current combo multiplier
-    this.chain     = 0;        // cascade chain count
-    this._lastComboTime = 0;
-    this.COMBO_RESET_MS = 3000; // ms of inactivity before combo resets
+    this.highScore = GameStorage.getHighScore(mode);
+    this.bestLevel = GameStorage.get('bestLevel') || 1;
+    this.combo     = 0;
+    this.chain     = 0;
+    this._lastComboTime  = 0;
+    this.COMBO_RESET_MS  = 3000;
+
+    // Dust earned this run (not yet committed to storage)
+    this._runDust   = 0;
+    this._dustTrack = 0; // score watermark for dust calculation
 
     // Callbacks set by Game
-    this.onScore      = null;  // (points, total) => void
-    this.onCombo      = null;  // (combo, message) => void
-    this.onHighScore  = null;  // (newHighScore) => void
+    this.onScore     = null;  // (points, total) => void
+    this.onCombo     = null;  // (combo, message) => void
+    this.onHighScore = null;  // (newHighScore) => void
   }
 
   // ─── Score calculation ─────────────────────────────────────────────────────
 
-  /**
-   * Award points for a match.
-   * @param {number} matchSize — number of blocks in the match
-   * @param {number} chain     — cascade depth (0 = first match, 1 = cascade, …)
-   * @param {number} level     — current game level (multiplier)
-   * @returns {number} points awarded
-   */
   addMatchPoints(matchSize, chain, level) {
-    // Base: 10 per block, bonus for size
     const sizeBonus = matchSize >= 5 ? 3 : matchSize >= 4 ? 2 : 1;
     const base      = matchSize * 10 * sizeBonus;
-
-    // Chain multiplier (cascades are more valuable)
     const chainMul  = 1 + chain * 0.5;
-
-    // Combo multiplier
     this.combo++;
     this._lastComboTime = Date.now();
-    const comboMul = 1 + (this.combo - 1) * 0.25;
+    const comboMul  = 1 + (this.combo - 1) * 0.25;
+    const levelMul  = 1 + (level - 1) * 0.1;
+    const points    = Math.round(base * chainMul * comboMul * levelMul);
 
-    // Level multiplier
-    const levelMul = 1 + (level - 1) * 0.1;
-
-    const points = Math.round(base * chainMul * comboMul * levelMul);
     this._awardPoints(points);
 
-    // Notify combo
-    const msg = getComboMessage(this.combo);
-    if (msg && this.onCombo) {
-      this.onCombo(this.combo, msg);
-    }
+    const msg = Unlocks.getComboMsg(this.combo);
+    if (msg && this.onCombo) this.onCombo(this.combo, msg);
 
     return points;
   }
 
-  /**
-   * Award points for a bomb explosion (bonus)
-   */
   addBombPoints(blocksCleared, level) {
-    const points = blocksCleared * 15 * (1 + (level - 1) * 0.1);
-    this._awardPoints(Math.round(points));
-    return Math.round(points);
+    const points = Math.round(blocksCleared * 15 * (1 + (level - 1) * 0.1));
+    this._awardPoints(points);
+    return points;
+  }
+
+  /** Award dust for reaching a new level. Call on each level-up event. */
+  onLevelUp() {
+    this._runDust += DUST_PER_LEVEL;
   }
 
   /**
-   * Internal: add points, update high score, fire callbacks
+   * Commit all dust earned this run to GameStorage.
+   * @param {boolean} dailyCompleted — add daily bonus?
+   * @returns {number} dust earned this run
    */
+  commitDust(dailyCompleted = false) {
+    if (dailyCompleted) this._runDust += DUST_DAILY_BONUS;
+    GameStorage.addDust(this._runDust);
+    const earned   = this._runDust;
+    this._runDust  = 0;
+    return earned;
+  }
+
+  get runDust() { return this._runDust; }
+
+  // ─── Internal ─────────────────────────────────────────────────────────────
+
   _awardPoints(points) {
     const prev = this.score;
     this.score += points;
 
-    // Update high score BEFORE firing onScore so UI reads the fresh value
-    let newHighScore = false;
-    if (this.score > this.highScore) {
+    // Accumulate dust at 1 per 100 score points
+    const newH = Math.floor(this.score       / 100);
+    const oldH = Math.floor(this._dustTrack  / 100);
+    this._runDust  += (newH - oldH) * DUST_PER_100_SCORE;
+    this._dustTrack = this.score;
+
+    // High score (mode-specific)
+    let newHigh = false;
+    if (GameStorage.setHighScore(this.mode, this.score)) {
       this.highScore = this.score;
-      this._saveHighScore();
-      newHighScore = true;
+      newHigh = true;
     }
 
     if (this.onScore) this.onScore(points, this.score);
 
-    // Milestone check
     const milestone = getMilestone(prev, this.score);
     if (milestone && this.onCombo) {
       this.onCombo(0, { msg: milestone.msg, color: milestone.color });
     }
 
-    if (newHighScore && this.onHighScore) {
-      this.onHighScore(this.highScore);
-    }
+    if (newHigh && this.onHighScore) this.onHighScore(this.highScore);
   }
 
-  /**
-   * Reset combo (called after inactivity or game events)
-   */
-  resetCombo() {
-    this.combo = 0;
-  }
+  // ─── Combo / chain ────────────────────────────────────────────────────────
 
-  /**
-   * Reset chain depth (called at start of each player-initiated swap)
-   */
-  resetChain() {
-    this.chain = 0;
-  }
+  resetCombo() { this.combo = 0; }
+  resetChain() { this.chain = 0; }
+  nextChain()  { this.chain++; }
 
-  /**
-   * Increment chain (for cascades)
-   */
-  nextChain() {
-    this.chain++;
-  }
-
-  /**
-   * Tick: auto-reset combo after inactivity
-   */
   tick() {
     if (this.combo > 0 && Date.now() - this._lastComboTime > this.COMBO_RESET_MS) {
       this.resetCombo();
     }
   }
 
-  /**
-   * Update best level if current level is higher
-   */
   updateBestLevel(level) {
     if (level > this.bestLevel) {
       this.bestLevel = level;
-      this._saveBestLevel();
+      GameStorage.set('bestLevel', level);
     }
   }
 
-  /**
-   * Reset score and combo for a new game (high score persists)
-   */
   reset() {
-    this.score = 0;
-    this.combo = 0;
-    this.chain = 0;
-  }
-
-  // ─── Persistence ───────────────────────────────────────────────────────────
-
-  _loadHighScore() {
-    try {
-      return parseInt(localStorage.getItem(LS_HIGH_SCORE) || '0', 10) || 0;
-    } catch { return 0; }
-  }
-
-  _saveHighScore() {
-    try { localStorage.setItem(LS_HIGH_SCORE, String(this.highScore)); } catch { /* ignore */ }
-  }
-
-  _loadBestLevel() {
-    try {
-      return parseInt(localStorage.getItem(LS_BEST_LEVEL) || '1', 10) || 1;
-    } catch { return 1; }
-  }
-
-  _saveBestLevel() {
-    try { localStorage.setItem(LS_BEST_LEVEL, String(this.bestLevel)); } catch { /* ignore */ }
-  }
-
-  static loadSoundPreference() {
-    try {
-      const val = localStorage.getItem(LS_SOUND_ON);
-      return val === null ? true : val === 'true';
-    } catch { return true; }
-  }
-
-  static saveSoundPreference(on) {
-    try { localStorage.setItem(LS_SOUND_ON, String(on)); } catch { /* ignore */ }
+    this.score      = 0;
+    this.combo      = 0;
+    this.chain      = 0;
+    this._runDust   = 0;
+    this._dustTrack = 0;
+    this.highScore  = GameStorage.getHighScore(this.mode);
   }
 }

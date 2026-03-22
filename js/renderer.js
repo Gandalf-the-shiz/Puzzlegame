@@ -57,6 +57,7 @@ class Renderer {
   // ─── Sizing ────────────────────────────────────────────────────────────────
 
   resize() {
+    if (!this.board) return; // guard against null board during init
     const dpr = window.devicePixelRatio || 1;
     const w   = this.canvas.clientWidth;
     const h   = this.canvas.clientHeight;
@@ -132,6 +133,12 @@ class Renderer {
     const h    = this.canvas.clientHeight;
 
     ctx.clearRect(0, 0, w, h);
+
+    // Only draw the board if one is attached
+    if (!this.board) {
+      this.particles.draw(ctx);
+      return;
+    }
 
     // Screen shake
     this._updateShake(dt);
@@ -246,7 +253,19 @@ class Renderer {
     ctx.restore();
   }
 
+  /**
+   * Map a block's stored hex color through the currently equipped theme palette.
+   * Falls back to the original hex color if no theme override is active.
+   */
+  _resolveColor(hexColor) {
+    const themed = Unlocks.getActiveBlockColors();
+    if (!themed) return hexColor;
+    const idx = COLORS.indexOf(hexColor);
+    return (idx >= 0 && idx < themed.length) ? themed[idx] : hexColor;
+  }
+
   _drawNormalBlock(ctx, cx, cy, bs, color, selected) {
+    color = this._resolveColor(color);
     const half = bs / 2;
 
     // Shadow
@@ -380,8 +399,12 @@ class Renderer {
 
   // ─── Screen shake ──────────────────────────────────────────────────────────
 
-  triggerShake(intensity = 8, duration = 0.3) {
-    this._shakePower    = intensity;
+  /**
+   * Trigger screen shake. comboScale multiplies intensity for big combos.
+   */
+  triggerShake(intensity = 8, duration = 0.3, comboScale = 1) {
+    const scaled        = Math.min(intensity * Math.max(1, comboScale), 30);
+    this._shakePower    = scaled;
     this._shakeTime     = duration;
     this._shakeDuration = duration;
   }
