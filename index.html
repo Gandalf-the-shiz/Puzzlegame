@@ -34,10 +34,35 @@
     </div>
   </header>
 
+  <!-- ── Mode label + dust display ─────────────────────────── -->
+  <div id="sub-header">
+    <span id="mode-label"></span>
+    <span id="header-dust"></span>
+  </div>
+
   <!-- ── Toolbar ────────────────────────────────────────────── -->
   <div id="toolbar">
-    <button class="btn btn-secondary" id="new-game-btn">🔄 New</button>
-    <button class="btn btn-icon btn-secondary" id="mute-btn" aria-label="Toggle sound">🔊</button>
+    <button class="btn btn-secondary btn-icon" id="menu-btn"     aria-label="Main menu">🏠</button>
+    <button class="btn btn-secondary"          id="new-game-btn">🔄 New</button>
+    <button class="btn btn-secondary btn-icon" id="mute-btn"     aria-label="Toggle sound">🔊</button>
+    <button class="btn btn-secondary btn-icon" id="music-btn"    aria-label="Toggle music">🎵</button>
+  </div>
+
+  <!-- ── Powerup bar ───────────────────────────────────────── -->
+  <div id="powerup-bar">
+    <button class="btn pp-btn" id="pp-bomb"    title="Bomb Blast — clear a 3×3 area">
+      <span class="pp-emoji">💣</span>
+      <span class="pp-charge">1</span>
+    </button>
+    <button class="btn pp-btn" id="pp-shuffle" title="Shuffle — re-roll the board">
+      <span class="pp-emoji">🔀</span>
+      <span class="pp-charge">1</span>
+    </button>
+    <button class="btn pp-btn" id="pp-undo"    title="Undo — revert last move">
+      <span class="pp-emoji">↩️</span>
+      <span class="pp-charge">2</span>
+    </button>
+    <div id="pp-aim-hint" class="hidden">Tap a cell to blast it 💣</div>
   </div>
 
   <!-- ── Combo message area ─────────────────────────────────── -->
@@ -53,7 +78,7 @@
 
 </div><!-- /#app -->
 
-<!-- ── Level-up overlay (non-blocking) ───────────────────────── -->
+<!-- ── Level-up overlay ──────────────────────────────────────── -->
 <div id="level-up" class="hidden" role="status" aria-live="polite"></div>
 
 <!-- ── New High Score Banner ─────────────────────────────────── -->
@@ -61,36 +86,71 @@
   🏆 NEW HIGH SCORE! 🏆
 </div>
 
-<!-- ── Start Screen ───────────────────────────────────────────── -->
-<div id="start-screen" class="overlay" role="dialog" aria-label="Start screen">
-  <div class="overlay-card">
-    <div id="start-title">♾️ Infinity<br>Puzzle</div>
-    <div id="start-subtitle">The endless match-3 madness</div>
+<!-- ── Daily Banner ──────────────────────────────────────────── -->
+<div id="daily-banner" class="hidden" role="status" aria-live="polite"></div>
 
-    <div class="start-high-row">
-      <span>🏆 Best:</span>
-      <span id="start-high-score">0</span>
+<!-- ════════════════════════════════════════════════════════════ -->
+<!-- ── Start Screen ──────────────────────────────────────────── -->
+<!-- ════════════════════════════════════════════════════════════ -->
+<div id="start-screen" class="overlay" role="dialog" aria-label="Start screen">
+  <div class="overlay-card start-card">
+
+    <div id="start-title">♾️ Infinity<br>Puzzle</div>
+    <div id="start-subtitle">Match · Combo · Conquer</div>
+
+    <!-- Streak + Dust row -->
+    <div class="start-meta-row">
+      <span id="start-streak" class="hidden"></span>
+      <span id="start-dust">💨 0 Wizard Dust</span>
     </div>
 
+    <!-- High scores per mode -->
+    <div class="start-hs-row">
+      <div class="start-hs-box">
+        <div class="start-hs-label">♾️ Endless</div>
+        <div id="start-hs-endless" class="start-hs-val">0</div>
+      </div>
+      <div class="start-hs-box">
+        <div class="start-hs-label">📅 Daily</div>
+        <div id="start-hs-daily" class="start-hs-val">0</div>
+      </div>
+      <div class="start-hs-box">
+        <div class="start-hs-label">💀 Hardcore</div>
+        <div id="start-hs-hardcore" class="start-hs-val">0</div>
+      </div>
+    </div>
+
+    <!-- Mode buttons -->
+    <div class="mode-btns">
+      <button class="btn btn-primary mode-btn" id="play-endless-btn">♾️ Endless</button>
+      <button class="btn btn-daily  mode-btn" id="play-daily-btn">📅 Daily Challenge</button>
+      <button class="btn btn-hardcore mode-btn" id="play-hardcore-btn">💀 Hardcore</button>
+    </div>
+
+    <!-- Secondary buttons -->
+    <div class="secondary-btns">
+      <button class="btn btn-secondary" id="open-shop-btn">🛍️ Shop</button>
+      <button class="btn btn-secondary" id="open-settings-btn">⚙️ Settings</button>
+    </div>
+
+    <!-- How to play -->
     <div class="how-to-play">
       <h3>How to Play</h3>
       <ul>
-        <li>Tap a block to select it</li>
-        <li>Tap an adjacent block to swap</li>
-        <li>Match 3+ same-colored blocks</li>
-        <li>Chain matches for combos &amp; big points</li>
-        <li>💣 Bombs clear nearby blocks</li>
-        <li>🌈 Rainbow matches anything!</li>
+        <li>Tap a block, then tap an adjacent block to swap</li>
+        <li>Match 3+ same-colored blocks to clear them</li>
+        <li>Chain reactions earn combo multipliers &amp; big points</li>
+        <li>💣 Bombs clear nearby blocks · 🌈 Rainbow matches anything</li>
+        <li>Use powerups wisely — charges are limited per run!</li>
       </ul>
     </div>
 
-    <button class="btn btn-primary" id="play-btn" style="width:100%;font-size:20px;padding:14px;">
-      🚀 PLAY
-    </button>
   </div>
 </div>
 
-<!-- ── Game Over Screen ───────────────────────────────────────── -->
+<!-- ════════════════════════════════════════════════════════════ -->
+<!-- ── Game Over Screen ─────────────────────────────────────── -->
+<!-- ════════════════════════════════════════════════════════════ -->
 <div id="game-over" class="overlay hidden" role="dialog" aria-label="Game over">
   <div class="overlay-card">
     <div id="game-over-title">💀 Game Over!</div>
@@ -105,11 +165,88 @@
         <div class="score-box-label">Best</div>
         <div class="score-box-value purple" id="final-high">0</div>
       </div>
+      <div class="score-box">
+        <div class="score-box-label">Dust</div>
+        <div class="score-box-value cyan" id="final-dust">+0 💨</div>
+      </div>
     </div>
 
-    <button class="btn btn-primary" id="replay-btn" style="width:100%;font-size:18px;padding:14px;">
-      🔄 Play Again
-    </button>
+    <div id="final-rank" class="final-rank hidden"></div>
+
+    <!-- Leaderboard -->
+    <div class="lb-section">
+      <div class="lb-title">📋 Leaderboard</div>
+      <div id="lb-entries"></div>
+    </div>
+
+    <div class="go-btns">
+      <button class="btn btn-primary"   id="replay-btn"      style="flex:1">🔄 Play Again</button>
+      <button class="btn btn-secondary" id="menu-from-go-btn" style="flex:1">🏠 Menu</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════ -->
+<!-- ── Settings Overlay ─────────────────────────────────────── -->
+<!-- ════════════════════════════════════════════════════════════ -->
+<div id="settings-overlay" class="overlay hidden" role="dialog" aria-label="Settings">
+  <div class="overlay-card">
+    <div class="overlay-header">
+      <h2>⚙️ Settings</h2>
+      <button class="btn btn-icon btn-secondary" id="close-settings">✕</button>
+    </div>
+
+    <div class="settings-list">
+      <label class="setting-row">
+        <span class="setting-label">🔊 Sound Effects</span>
+        <input type="checkbox" id="st-sound" class="toggle" checked />
+      </label>
+      <label class="setting-row">
+        <span class="setting-label">🎵 Background Music</span>
+        <input type="checkbox" id="st-music" class="toggle" />
+      </label>
+      <label class="setting-row">
+        <span class="setting-label">📳 Haptics / Vibration</span>
+        <input type="checkbox" id="st-haptics" class="toggle" checked />
+      </label>
+      <label class="setting-row">
+        <span class="setting-label">👁️ Colorblind Palette</span>
+        <input type="checkbox" id="st-colorblind" class="toggle" />
+      </label>
+    </div>
+
+    <p class="settings-note">
+      Infinity Puzzle works fully offline — no server required.<br>
+      Your progress is saved locally in your browser.
+    </p>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════ -->
+<!-- ── Shop Overlay ─────────────────────────────────────────── -->
+<!-- ════════════════════════════════════════════════════════════ -->
+<div id="shop-overlay" class="overlay hidden" role="dialog" aria-label="Shop">
+  <div class="overlay-card shop-card">
+    <div class="overlay-header">
+      <h2>🛍️ Shop</h2>
+      <button class="btn btn-icon btn-secondary" id="close-shop">✕</button>
+    </div>
+    <div id="shop-dust" class="shop-dust-display">💨 0 Wizard Dust</div>
+    <div id="shop-tabs" class="shop-tabs"></div>
+    <div id="shop-items" class="shop-items"></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════ -->
+<!-- ── Powerup Confirm Popup ────────────────────────────────── -->
+<!-- ════════════════════════════════════════════════════════════ -->
+<div id="confirm-overlay" class="overlay hidden" role="dialog" aria-label="Confirm powerup">
+  <div class="overlay-card confirm-card">
+    <div id="confirm-msg" class="confirm-msg"></div>
+    <div class="confirm-btns">
+      <button class="btn btn-primary"   id="confirm-yes">Use it! ✅</button>
+      <button class="btn btn-secondary" id="confirm-no">Cancel ✕</button>
+    </div>
   </div>
 </div>
 
@@ -117,6 +254,12 @@
 <script src="js/utils.js"></script>
 <script src="js/block.js"></script>
 <script src="js/board.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/settings.js"></script>
+<script src="js/daily.js"></script>
+<script src="js/unlocks.js"></script>
+<script src="js/powerups.js"></script>
+<script src="js/leaderboard.js"></script>
 <script src="js/score.js"></script>
 <script src="js/levels.js"></script>
 <script src="js/particles.js"></script>

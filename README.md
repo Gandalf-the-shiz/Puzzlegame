@@ -1,96 +1,141 @@
 # ♾️ Infinity Puzzle
 
-> The endless, addicting, match-3 hybrid puzzle game — built for mobile browsers, playable anywhere.
+> **A crazy-addictive match-3 puzzle game** with daily challenges, meta-progression, power-ups, and hardcore mode — playable entirely offline via GitHub Pages.
 
-**Open `index.html` in any browser to play!** No build tools, no install, no CDN — pure HTML/CSS/JS.
-
----
-
-## 🎮 How to Play
-
-1. **Tap** a colored block to select it (it glows)
-2. **Tap** an adjacent block to swap them
-3. **Match 3 or more** same-colored blocks in a row or column
-4. Matched blocks disappear, new blocks fall in from above
-5. Chain matches for **cascades** and massive combos!
-6. The game ends when no valid moves remain
-
-### Block Types
-| Block | Effect |
-|-------|--------|
-| 🟥🟩🟦 Colored | Match 3+ same color for points |
-| 🔢 Number | Match 3+ same value → merge into 2× value |
-| 💣 Bomb | Explodes and clears a 3×3 area around it |
-| 🌈 Rainbow | Matches any color! |
-| ⬛ Blocker | Can't be moved — clear blocks around it |
-
-### Controls
-- **Tap** to select, **tap adjacent** to swap
-- **Swipe** directly to swap in a direction
-- Works with touch and mouse
+[**▶ Play Now**](https://gandalf-the-shiz.github.io/Puzzlegame/)
 
 ---
 
-## ✨ Features
+## 🎮 Game Modes
 
-- **Endless gameplay** — no time limit, just match until you run out of moves
-- **Progressive difficulty** — new colors, special blocks, and faster refills unlock each level
-- **Combo system** — chain matches within 3 seconds for multiplied points
-  - 2× "Nice! 😎" → 5× "LEGENDARY! ⚡" → 10× "ARE YOU A WIZARD?! 🧙‍♂️" → 20× "CALL THE POLICE! 🚨"
-- **Cascade chains** — matches that trigger more matches score exponentially higher
-- **High score persistence** — your best score is saved in `localStorage` forever
-- **Particle effects** — colorful explosions on every match
-- **Screen shake** — satisfying feedback for powerful moves
-- **Web Audio API sounds** — procedurally generated, no audio files needed
-- **Mute toggle** — tap 🔊 to silence
-- **Mobile-first** — designed for phone screens, works in portrait mode, safe area aware
-- **No dependencies** — zero npm, zero build steps, zero CDN
+| Mode | Description |
+|---|---|
+| ♾️ **Endless** | Classic infinite match-3. Difficulty ramps up forever. |
+| 📅 **Daily Challenge** | Same seeded board for every player each day. Build streaks! |
+| 💀 **Hardcore** | Faster level ramp, more blockers, limited power-ups. |
 
 ---
 
-## 📁 Architecture
+## 📅 Daily Challenge & Streaks
+
+- A new seeded board is generated each calendar day (consistent for every player).
+- Playing the daily challenge counts towards your **streak counter**.
+- Streaks are tracked even if you don't win — just play!
+- **Streak Milestone Rewards:**
+  | Streak | Reward |
+  |--------|--------|
+  | 3 days | 🌊 Ocean Theme + 50 💨 |
+  | 7 days | ⭐ Stars Particles + 100 💨 |
+  | 14 days | 🏆 Sports Announcer + 200 💨 |
+  | 30 days | ⚡ Neon Theme + 500 💨 |
+
+---
+
+## 💨 Wizard Dust & Unlocks
+
+**Wizard Dust** is the in-game currency earned by playing:
+- 1 dust per 100 score points
+- 5 dust per level-up
+- 25 bonus dust for completing the Daily Challenge
+
+### Shop Categories
+
+| Category | Items |
+|---|---|
+| 🎨 **Themes** | Classic, 🌊 Ocean (100💨), 🌅 Sunset (150💨), 🌲 Forest (200💨), ⚡ Neon (300💨) |
+| ✨ **Particles** | Classic, ⭐ Stars (100💨), 🎉 Confetti (200💨), 💫 Sparkles (300💨) |
+| 📣 **Announcers** | 🧙 Wizard, 🏆 Sports (100💨), 🤖 Robot (200💨) |
+
+All items are **purely cosmetic** — no pay-to-win.
+
+---
+
+## ⚡ Power-ups
+
+Three power-ups per run with limited charges (use wisely!):
+
+| Power-up | Description | Charges (Endless/Daily) | Charges (Hardcore) |
+|---|---|---|---|
+| 💣 **Bomb Blast** | Tap to destroy a 3×3 area | 1 | 0 |
+| 🔀 **Shuffle** | Re-roll every block on the board | 1 | 1 |
+| ↩️ **Undo** | Revert to the board before your last move | 2 | 1 |
+
+A confirmation prompt appears before each use to prevent accidents.
+
+---
+
+## 🏆 Leaderboards
+
+- **Local leaderboard** (top 10) stored in your browser for each mode.
+- Shown on the Game Over screen with your current rank highlighted.
+- No backend required — fully private and offline.
+
+---
+
+## ⚙️ Settings
+
+| Setting | Default |
+|---|---|
+| 🔊 Sound Effects | On |
+| 🎵 Background Music | Off |
+| 📳 Haptics / Vibration | On |
+| 👁️ Colorblind Palette | Off |
+
+---
+
+## 🏗️ Architecture
 
 ```
-Puzzlegame/
-├── index.html        ← Entry point, minimal HTML shell
-├── css/
-│   └── style.css     ← Mobile-first responsive design
-├── js/
-│   ├── utils.js      ← Constants, color palette, easing functions
-│   ├── block.js      ← Block class (NORMAL/NUMBER/BOMB/RAINBOW/BLOCKER)
-│   ├── board.js      ← Grid logic: matching, gravity, move validation
-│   ├── score.js      ← ScoreManager: combos, multipliers, localStorage
-│   ├── levels.js     ← LevelManager: progressive difficulty curves
-│   ├── particles.js  ← ParticleSystem: colorful explosion effects
-│   ├── audio.js      ← AudioManager: Web Audio API sounds
-│   ├── renderer.js   ← Canvas renderer: blocks, animations, tweening
-│   ├── input.js      ← InputHandler: touch/mouse/swipe
-│   └── game.js       ← Game controller: state machine, game loop
-└── README.md
+js/
+  storage.js    — Versioned localStorage save/load with v1 migration
+  settings.js   — Player preferences
+  daily.js      — Deterministic daily seed (seeded PRNG) + streak logic
+  unlocks.js    — Cosmetic catalogue (themes, particles, announcers)
+  powerups.js   — Powerup definitions + run-time charge management
+  leaderboard.js— Top-10 leaderboard per mode
+  score.js      — Scoring, combos, Wizard Dust accumulation
+  levels.js     — Progressive difficulty (Endless & Hardcore configs)
+  particles.js  — Particle effects with 4 style modes
+  audio.js      — Procedural SFX + optional background music
+  renderer.js   — Canvas rendering with theme-aware block colours
+  board.js      — Grid logic (matching, gravity, move validation)
+  block.js      — Block types and behaviour
+  input.js      — Touch + mouse input (tap & swipe)
+  game.js       — Main controller: modes, power-ups, overlays, loop
+css/
+  style.css     — Mobile-first responsive UI
+index.html      — Single-page app shell
 ```
 
----
+### Save Schema (localStorage `puzzlegame.save`)
 
-## 🏆 Scoring
+```json
+{
+  "saveVersion": 2,
+  "highScores":   { "endless": 0, "daily": 0, "hardcore": 0 },
+  "bestLevel":    1,
+  "dust":         0,
+  "dailyStreak":  { "count": 0, "lastDate": null },
+  "unlockedItems": ["theme_default", "particles_classic", "announcer_wizard"],
+  "equippedItems": { "theme": "theme_default", "particles": "particles_classic", "announcer": "announcer_wizard" },
+  "settings":     { "soundOn": true, "musicOn": false, "hapticsOn": true, "colorblindMode": false },
+  "leaderboards": { "endless": [], "daily": [], "hardcore": [] }
+}
+```
 
-| Action | Points |
-|--------|--------|
-| 3-block match | 30 pts |
-| 4-block match | 80 pts |
-| 5+ block match | 150+ pts |
-| Cascade chain | +50% per depth |
-| Combo (2+) | +25% per combo level |
-| Level multiplier | +10% per level |
-
----
-
-## 📱 Browser Support
-
-Works in any modern mobile or desktop browser:
-- Chrome, Firefox, Safari, Edge
-- iOS Safari, Chrome for Android
-- GitHub mobile browser
+High scores from the original game (v1 `infinityPuzzle_highScore` key) are automatically migrated to the new format.
 
 ---
 
-*Built with ❤️ — pure vanilla HTML, CSS, and JavaScript.*
+## 📱 GitHub Pages / Offline Play
+
+- Works on **mobile Safari, Chrome, Firefox** — no installation required.
+- Fully offline after first load (no CDN, no server).
+- Safe-area insets for notched iPhones/Androids.
+- Prevents accidental scroll/zoom on the game canvas.
+
+---
+
+## �� Developer Debug
+
+Set `const DEBUG = true;` in `js/daily.js`, then add `?devDate=YYYY-MM-DD` to the URL to test daily challenge for any specific date.
