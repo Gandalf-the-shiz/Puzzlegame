@@ -313,9 +313,8 @@ class Storage {
 // Singleton — all modules reference window.GameStorage
 const GameStorage = new Storage();
 
-// Alias for hub modes (they call Storage.*)
-const StorageAlias = GameStorage;
-// Expose as Storage only if not already defined; game.js uses GameStorage directly
+// Expose singleton globally; hub modules call Storage.*, match-3 calls GameStorage.*
 if (typeof window !== 'undefined') {
   window.GameStorage = GameStorage;
+  window.Storage = GameStorage;
 }
