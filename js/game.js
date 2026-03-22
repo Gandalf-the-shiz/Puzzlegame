@@ -802,32 +802,30 @@ class Game {
 
   // ─── Confirm popup ─────────────────────────────────────────────────────────
 
+  /**
+   * Show a confirmation dialog before an action (e.g., powerup use).
+   * Uses AbortController so listeners are cleaned up without DOM cloning.
+   */
   _showConfirm(message, onYes) {
     this.ui.confirmMsg.textContent = message;
     this.ui.confirmOverlay.classList.remove('hidden');
 
-    const cleanup = () => {
+    // Use AbortController to cancel stale listeners on the next open
+    if (this._confirmAbort) this._confirmAbort.abort();
+    this._confirmAbort = new AbortController();
+    const { signal } = this._confirmAbort;
+
+    const dismiss = () => {
       this.ui.confirmOverlay.classList.add('hidden');
-      this.ui.confirmYes.replaceWith(this.ui.confirmYes.cloneNode(true));
-      this.ui.confirmNo.replaceWith(this.ui.confirmNo.cloneNode(true));
-      // Re-query after clone
-      this.ui.confirmYes = document.getElementById('confirm-yes');
-      this.ui.confirmNo  = document.getElementById('confirm-no');
-      this._rewireConfirm();
+      if (this._confirmAbort) { this._confirmAbort.abort(); this._confirmAbort = null; }
     };
 
     this.ui.confirmYes.addEventListener('click', async () => {
-      cleanup();
+      dismiss();
       await onYes();
-    }, { once: true });
+    }, { signal });
 
-    this.ui.confirmNo.addEventListener('click', () => {
-      cleanup();
-    }, { once: true });
-  }
-
-  _rewireConfirm() {
-    // Buttons are replaced on each use — nothing to re-wire here
+    this.ui.confirmNo.addEventListener('click', () => dismiss(), { signal });
   }
 
   // ─── UI updates ────────────────────────────────────────────────────────────

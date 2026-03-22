@@ -73,6 +73,7 @@ class Particle {
     ctx.fillStyle = this.color;
     ctx.translate(this.x, this.y);
     ctx.rotate(this.rotation);
+    // Alternate circle/square shape based on rotation phase (4 divisions per π rad)
     if (Math.floor(this.rotation * 4) % 2 === 0) {
       ctx.beginPath();
       ctx.arc(0, 0, this.size, 0, Math.PI * 2);

@@ -113,7 +113,9 @@ class AudioManager {
     });
 
     // Schedule next loop iteration
-    const loopDuration = notes.length * beat * 1000 + 1200;
+    // Extra gap between loop iterations to avoid audio glitching (ms)
+    const MUSIC_LOOP_GAP_MS = 1200;
+    const loopDuration = notes.length * beat * 1000 + MUSIC_LOOP_GAP_MS;
     this._musicTimer = setTimeout(() => {
       this._musicNodes = [];
       this._musicLoop();

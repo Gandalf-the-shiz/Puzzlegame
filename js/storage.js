@@ -63,7 +63,7 @@ class Storage {
 
   /** Ensure all expected fields exist (handles partial/old v2 saves) */
   _migrate(data) {
-    const d = Object.assign({}, deepClone(DEFAULT_SAVE), data);
+    const d = Object.assign(deepClone(DEFAULT_SAVE), data);
     d.highScores    = Object.assign({}, DEFAULT_SAVE.highScores,    data.highScores   || {});
     d.dailyStreak   = Object.assign({}, DEFAULT_SAVE.dailyStreak,   data.dailyStreak  || {});
     d.equippedItems = Object.assign({}, DEFAULT_SAVE.equippedItems, data.equippedItems|| {});

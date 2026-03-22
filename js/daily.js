@@ -9,7 +9,7 @@
 
 'use strict';
 
-const DEBUG = false; // set true during development only
+const DEBUG = false; // ⚠️ NEVER commit as `true` — for local dev only
 
 // ─── Date helpers ───────────────────────────────────────────────────────────
 
