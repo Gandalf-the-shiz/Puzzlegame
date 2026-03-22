@@ -59,7 +59,7 @@ const DEFAULT_SAVE = {
   },
 };
 
-class Storage {
+class GameStorageClass {
   constructor() {
     this._data = this._load();
   }
@@ -311,9 +311,12 @@ class Storage {
 }
 
 // Singleton — all modules reference window.GameStorage
-const GameStorage = new Storage();
+const GameStorage = new GameStorageClass();
 
 // Expose singleton globally; hub modules call Storage.*, match-3 calls GameStorage.*
+// `const Storage` creates a lexical binding visible to all scripts in this realm,
+// so bare `Storage` in app.js resolves to the instance, not the class constructor.
+const Storage = GameStorage;
 if (typeof window !== 'undefined') {
   window.GameStorage = GameStorage;
   window.Storage = GameStorage;
