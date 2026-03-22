@@ -258,11 +258,17 @@ const WordleMode = (() => {
   }
 
   function _showMessage(msg) {
-    const el = _root && _root.querySelector('#wrd-result');
-    if (!el) return;
-    el.classList.remove('hidden');
-    el.innerHTML = `<span style="color:#f87171">${msg}</span>`;
-    setTimeout(() => el.classList.add('hidden'), 2000);
+    // Use a temporary toast element so we don't overwrite the result card
+    let toast = _root && _root.querySelector('.wrd-toast');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.className = 'wrd-toast';
+      if (_root) _root.querySelector('.wordle-wrap').appendChild(toast);
+    }
+    toast.textContent = msg;
+    toast.classList.add('wrd-toast-visible');
+    clearTimeout(toast._timeout);
+    toast._timeout = setTimeout(() => toast.classList.remove('wrd-toast-visible'), 2000);
   }
 
   // ── Completion ───────────────────────────────────────────────────
@@ -321,7 +327,7 @@ const WordleMode = (() => {
     });
 
     try {
-      navigator.clipboard.writeText(text).then(() => alert('Copied!'));
+      navigator.clipboard.writeText(text).then(() => _showMessage('✅ Copied!'));
     } catch {
       prompt('Copy your result:', text);
     }

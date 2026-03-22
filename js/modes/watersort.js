@@ -127,10 +127,6 @@ const WaterSortMode = (() => {
     if (!src.length) return false;
     if (dst.length >= TUBE_CAP) return false;
     if (dst.length > 0 && dst[dst.length - 1] !== src[src.length - 1]) return false;
-    // Don't move if tube is already sorted (all same color and full)
-    if (src.every(c => c === src[0]) && src.length === TUBE_CAP && (!dst.length)) {
-      // This prevents moving already-complete tubes; optional
-    }
     return true;
   }
 

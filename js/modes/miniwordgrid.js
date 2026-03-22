@@ -130,15 +130,26 @@ const MiniWordGridMode = (() => {
       gridEl.appendChild(cell);
     });
 
-    // Render clues
+    // Build startCell → computedNum map for clue display
+    const cellNums2 = _computeCellNumbers(_puzzle.solution, _puzzle.cols, _puzzle.rows);
+    const startCellToNum = {};
+    cellNums2.forEach((n, i) => { if (n) startCellToNum[i] = n; });
+
+    // Render clues using startCell lookup
     cluesEl.innerHTML = `
       <div class="mwg-clue-section">
         <div class="mwg-clue-heading">Across</div>
-        ${_puzzle.clues.across.map(c => `<div class="mwg-clue"><span class="mwg-clue-num">${c.num}</span>${c.clue}</div>`).join('')}
+        ${_puzzle.clues.across.map(c => {
+          const n = startCellToNum[c.startCell] || '?';
+          return `<div class="mwg-clue"><span class="mwg-clue-num">${n}</span>${c.clue}</div>`;
+        }).join('')}
       </div>
       <div class="mwg-clue-section">
         <div class="mwg-clue-heading">Down</div>
-        ${_puzzle.clues.down.map(c => `<div class="mwg-clue"><span class="mwg-clue-num">${c.num}</span>${c.clue}</div>`).join('')}
+        ${_puzzle.clues.down.map(c => {
+          const n = startCellToNum[c.startCell] || '?';
+          return `<div class="mwg-clue"><span class="mwg-clue-num">${n}</span>${c.clue}</div>`;
+        }).join('')}
       </div>`;
   }
 

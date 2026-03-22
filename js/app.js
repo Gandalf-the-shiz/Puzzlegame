@@ -101,8 +101,7 @@ const App = (() => {
       const lbBest    = Leaderboard.getBest(m.id);
       let bestStr = '';
       if (m.id === 'match') {
-        const hs = Storage.getModeField('match', 'highScore', 0) ||
-                   parseInt(localStorage.getItem('infinityPuzzle_highScore') || '0', 10);
+        const hs = Storage.getModeField('match', 'highScore', 0);
         if (hs) bestStr = `Best: ${hs.toLocaleString()}`;
       } else if (lbBest) {
         bestStr = `Best: ${lbBest.score.toLocaleString()}`;

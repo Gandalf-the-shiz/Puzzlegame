@@ -65,6 +65,7 @@ const MahjongMode = (() => {
   let _ctx       = null;
   let _tiles     = [];      // { id, type, layer, row, col, removed }
   let _selected  = null;    // tile id
+  let _hintIds   = [];      // ids of hint-highlighted tiles
   let _moves     = 0;
   let _startTime = 0;
   let _elapsed   = 0;
@@ -95,6 +96,7 @@ const MahjongMode = (() => {
     _isDaily    = !!opts.daily;
     _layoutName = opts.layout || 'turtle';
     _selected   = null;
+    _hintIds    = [];
     _moves      = 0;
     _elapsed    = 0;
     _over       = false;
@@ -248,7 +250,7 @@ const MahjongMode = (() => {
     const minCol = Math.min(..._tiles.map(t => t.col));
     const minRow = Math.min(..._tiles.map(t => t.row));
 
-    let hintIds = [];
+    let hintIds = _hintIds;
 
     activeTiles.forEach(tile => {
       const free = _isFree(tile);
@@ -289,10 +291,18 @@ const MahjongMode = (() => {
     });
   }
 
+  function _showHintMessage(msg) {
+    const result = _root && _root.querySelector('#mj-result');
+    if (!result) return;
+    result.innerHTML = `<span style="color:#f87171;font-size:13px">${msg}</span>`;
+    setTimeout(() => { if (result) result.innerHTML = ''; }, 2000);
+  }
+
   // ── Interaction ─────────────────────────────────────────────────
 
   function _handleTileTap(id) {
     if (_over) return;
+    _hintIds = []; // clear hint on any tap
     const tile = _tiles.find(t => t.id === id);
     if (!tile || !_isFree(tile)) return;
 
@@ -327,28 +337,14 @@ const MahjongMode = (() => {
 
   function _showHint() {
     const pair = _findHint();
-    if (!pair) { alert('No moves available!'); return; }
-
-    // Flash both tiles
-    const board = _root && _root.querySelector('#mj-board');
-    if (!board) return;
-    [...board.querySelectorAll('.mj-tile')].forEach(el => el.classList.remove('mj-hint'));
-
-    // Re-render with hint highlighted
-    const minCol = Math.min(..._tiles.map(t => t.col));
-    const minRow = Math.min(..._tiles.map(t => t.row));
-    const TILE_W = 44, TILE_H = 58, LAYER_OFFSET = 4;
-
-    pair.forEach(hId => {
-      const tile = _tiles.find(t => t.id === hId);
-      if (!tile) return;
-      const x = (tile.col - minCol) * (TILE_W / 2) + tile.layer * LAYER_OFFSET;
-      const y = (tile.row - minRow) * (TILE_H / 2) + tile.layer * LAYER_OFFSET;
-      const els = [...board.querySelectorAll('.mj-tile')].filter(el => {
-        return Math.abs(parseInt(el.style.left) - x) < 2 && Math.abs(parseInt(el.style.top) - y) < 2;
-      });
-      els.forEach(el => el.classList.add('mj-hint'));
-    });
+    if (!pair) {
+      _showHintMessage('No moves available!');
+      return;
+    }
+    _hintIds = pair;
+    _renderBoard();
+    // Clear hint after 2 seconds
+    setTimeout(() => { _hintIds = []; _renderBoard(); }, 2000);
   }
 
   // ── Completion ───────────────────────────────────────────────────

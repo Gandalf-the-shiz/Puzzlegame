@@ -263,14 +263,17 @@ const ConnectorMode = (() => {
   }
 
   function _share() {
-    const colors = { 0: '🟨', 1: '🟩', 2: '🟦', 3: '🟪' };
+    // Map group index to emoji by difficulty order (0=yellow,1=green,2=blue,3=purple)
+    const groupEmoji = ['🟨', '🟩', '🟦', '🟪'];
     const date = Daily.todayStr();
     let text = `Connector ${date}\n`;
-    // We don't have solve-order tracking so just show final result
-    text += _solved.map((gIdx, i) => colors[i] + colors[i] + colors[i] + colors[i]).join('\n');
+    text += _solved.map(gIdx => {
+      const emoji = groupEmoji[gIdx] || '⬜';
+      return emoji + emoji + emoji + emoji;
+    }).join('\n');
     text += `\nMistakes: ${_mistakes}`;
     try {
-      navigator.clipboard.writeText(text).then(() => alert('Copied to clipboard!'));
+      navigator.clipboard.writeText(text).then(() => _flashStatus('✅ Copied!'));
     } catch {
       prompt('Copy your result:', text);
     }

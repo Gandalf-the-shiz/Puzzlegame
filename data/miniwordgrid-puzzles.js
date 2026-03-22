@@ -1,14 +1,16 @@
 /**
  * miniwordgrid-puzzles.js — Hand-authored mini crossword puzzle packs
  *
- * Grid format: flat array of chars, left-to-right, top-to-bottom.
- * '#' = black cell (blocker).
- * Letters = solution letters.
+ * Grid: flat array of chars (left-to-right, top-to-bottom).
+ *   '#' = black cell (blocker)
+ *   Letter = solution letter
  *
- * Clues: { across: [{num, clue}], down: [{num, clue}] }
- * Numbers follow standard crossword numbering (left-to-right, top-to-bottom).
- *
+ * Clues reference cells by `startCell` (flat index), NOT a pre-assigned number.
+ * The clue number displayed in-game is auto-computed by miniwordgrid.js.
  * All grids are 5×5.
+ *
+ * Each puzzle has been manually verified: all words intersect correctly.
+ * Pattern: 3 across words in rows 0,2,4 starting at col 1; 1 down word in col 1.
  */
 
 'use strict';
@@ -20,24 +22,21 @@ const MINIWORDGRID_PUZZLES = [
     cols: 5,
     rows: 5,
     solution: [
-      'C','A','T','S','#',
-      'H','#','I','#','G',
-      'E','E','R','S','O',
-      'S','#','E','#','D',
-      '#','B','D','O','G',
+      '#','S','A','G','E',
+      '#','T','#','#','#',
+      '#','A','R','E','A',
+      '#','R','#','#','#',
+      '#','S','T','A','R',
     ],
+    // Down col1: STARS   Across: SAGE / AREA / STAR
     clues: {
       across: [
-        { num: 1, clue: 'Feline friends (plural)' },
-        { num: 5, clue: 'Spirits up — "give ___"' },
-        { num: 6, clue: '20-20 vision alternative' },
-        { num: 7, clue: 'Canine pal (3)' },
+        { startCell:  1, clue: 'Cooking herb (also a wise person)' },
+        { startCell: 11, clue: 'A region or zone' },
+        { startCell: 21, clue: 'A celestial body (not the sun)' },
       ],
       down: [
-        { num: 1, clue: 'Test (plural)' },
-        { num: 2, clue: 'Also' },
-        { num: 3, clue: 'Pulled apart (past tense)' },
-        { num: 4, clue: 'Celestial body' },
+        { startCell: 1, clue: 'Celestial lights (plural)' },
       ],
     },
   },
@@ -47,23 +46,21 @@ const MINIWORDGRID_PUZZLES = [
     cols: 5,
     rows: 5,
     solution: [
-      'P','I','N','E','#',
-      'A','#','O','#','S',
-      'R','A','I','N','Y',
-      'K','#','S','#','E',
-      '#','B','E','E','S',
+      '#','M','A','R','K',
+      '#','U','#','#','#',
+      '#','S','A','L','T',
+      '#','I','#','#','#',
+      '#','C','A','S','H',
     ],
+    // Down col1: MUSIC   Across: MARK / SALT / CASH
     clues: {
       across: [
-        { num: 1, clue: 'Evergreen tree' },
-        { num: 5, clue: 'Wet weather day' },
-        { num: 6, clue: 'Buzzing insects (plural)' },
+        { startCell:  1, clue: 'Leave a trace on a surface' },
+        { startCell: 11, clue: 'White seasoning for food' },
+        { startCell: 21, clue: 'Physical paper money' },
       ],
       down: [
-        { num: 1, clue: 'Outdoor recreation area' },
-        { num: 2, clue: 'Musical note or legume' },
-        { num: 3, clue: 'Lack of noise' },
-        { num: 4, clue: 'Affirmative response' },
+        { startCell: 1, clue: 'Harmony of sounds' },
       ],
     },
   },
@@ -73,23 +70,21 @@ const MINIWORDGRID_PUZZLES = [
     cols: 5,
     rows: 5,
     solution: [
-      'S','T','A','R','#',
-      'T','#','R','#','M',
-      'O','V','E','N','S',
-      'P','#','A','#','T',
-      '#','C','N','A','P',
+      '#','B','O','L','D',
+      '#','R','#','#','#',
+      '#','E','A','C','H',
+      '#','A','#','#','#',
+      '#','D','A','R','K',
     ],
+    // Down col1: BREAD   Across: BOLD / EACH / DARK
     clues: {
       across: [
-        { num: 1, clue: 'Celestial light' },
-        { num: 5, clue: 'Kitchen cookers (plural)' },
-        { num: 6, clue: 'Quick sleep: power ___' },
+        { startCell:  1, clue: 'Daring and fearless' },
+        { startCell: 11, clue: 'Every single one' },
+        { startCell: 21, clue: 'Lacking light' },
       ],
       down: [
-        { num: 1, clue: 'To halt' },
-        { num: 2, clue: 'Craft or profession' },
-        { num: 3, clue: 'Area of land' },
-        { num: 4, clue: 'Tiny amount' },
+        { startCell: 1, clue: 'Sliced loaf for sandwiches' },
       ],
     },
   },
@@ -99,23 +94,21 @@ const MINIWORDGRID_PUZZLES = [
     cols: 5,
     rows: 5,
     solution: [
-      'W','A','V','E','#',
-      'I','#','A','#','C',
-      'N','O','S','E','S',
-      'D','#','E','#','P',
-      '#','D','E','E','P',
+      '#','F','A','R','M',
+      '#','R','#','#','#',
+      '#','O','P','E','N',
+      '#','S','#','#','#',
+      '#','T','R','E','K',
     ],
+    // Down col1: FROST   Across: FARM / OPEN / TREK
     clues: {
       across: [
-        { num: 1, clue: 'Ocean motion' },
-        { num: 5, clue: 'Facial features for smelling (plural)' },
-        { num: 6, clue: 'Far below the surface' },
+        { startCell:  1, clue: 'Agricultural land for crops' },
+        { startCell: 11, clue: 'Not shut; unlocked' },
+        { startCell: 21, clue: 'A long, difficult journey on foot' },
       ],
       down: [
-        { num: 1, clue: 'Blowing air (as in a turbine)' },
-        { num: 2, clue: 'Musical note (do-___)' },
-        { num: 3, clue: 'Poetry or rhyme' },
-        { num: 4, clue: 'Evening abbrev.' },
+        { startCell: 1, clue: 'Morning ice crystals on grass' },
       ],
     },
   },
@@ -125,23 +118,21 @@ const MINIWORDGRID_PUZZLES = [
     cols: 5,
     rows: 5,
     solution: [
-      'B','L','A','Z','E',
-      'R','#','P','#','A',
-      'A','S','P','E','N',
-      'V','#','L','#','S',
-      'E','A','E','S','Y',
+      '#','O','V','E','N',
+      '#','C','#','#','#',
+      '#','E','A','R','N',
+      '#','A','#','#','#',
+      '#','N','O','S','E',
     ],
+    // Down col1: OCEAN   Across: OVEN / EARN / NOSE
     clues: {
       across: [
-        { num: 1, clue: 'Roaring fire' },
-        { num: 5, clue: 'White-barked tree' },
-        { num: 6, clue: 'Not difficult' },
+        { startCell:  1, clue: 'Baking appliance in a kitchen' },
+        { startCell: 11, clue: 'To gain wages or a salary' },
+        { startCell: 21, clue: 'Organ of smell on your face' },
       ],
       down: [
-        { num: 1, clue: 'Jacket or sports coat' },
-        { num: 2, clue: 'Poisonous snake' },
-        { num: 3, clue: 'Applied (something)' },
-        { num: 4, clue: 'Direction (abbrev.)' },
+        { startCell: 1, clue: 'Vast body of salt water' },
       ],
     },
   },
