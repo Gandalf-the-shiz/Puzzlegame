@@ -816,7 +816,14 @@ function startMatch3Game(mode) {
 
 // ── Bootstrap ────────────────────────────────────────────────────────────────
 
-document.addEventListener('DOMContentLoaded', function () {
-  window._game = new Game();
-});
+function initMatch3Game() {
+  if (!window._game) {
+    try {
+      window._game = new Game();
+    } catch (e) {
+      console.error('[PuzzleHub] Failed to init match-3 engine:', e);
+    }
+  }
+  return window._game;
+}
 
