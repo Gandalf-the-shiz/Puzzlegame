@@ -34,9 +34,6 @@ class Renderer {
 
     // Queued animations
     this._animations = []; // {type, progress, data, duration}
-    this._shakeX = 0;
-    this._shakeY = 0;
-    this._shakeTime = 0;
 
     // Selected block highlight
     this.selectedCell = null; // {r, c}

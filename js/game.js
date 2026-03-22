@@ -1,4 +1,4 @@
-// Updated game.js to stop auto-booting the Game and export a start function
+// Updated game.js to stop auto-booting the Game and expose a start function
 
 // The Game function here
 function Game() {
@@ -14,9 +14,7 @@ function startMatch3Game() {
 Game.prototype.stop = function() {
     cancelAnimationFrame(this.animationId);
     window.removeEventListener('resize', this.onResize);
-    this.disableInput();
-    this.stopMusic();
-    this.hideOverlays();
+    if (typeof this.disableInput === 'function') this.disableInput();
+    if (typeof this.stopMusic === 'function') this.stopMusic();
+    if (typeof this.hideOverlays === 'function') this.hideOverlays();
 };
-
-export { startMatch3Game };

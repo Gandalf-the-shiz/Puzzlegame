@@ -78,6 +78,8 @@ class AudioManager {
 
   stopMusic() {
     this._musicPlaying = false;
+    clearTimeout(this._musicTimer);
+    this._musicTimer = null;
     for (const n of this._musicNodes) {
       try { n.stop(); } catch { /* already stopped */ }
     }
