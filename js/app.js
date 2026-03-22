@@ -61,65 +61,70 @@ const App = (() => {
     const grid = document.getElementById('hub-cards');
     if (!grid) return;
 
-    const today = Daily.todayStr();
-    const streak = Daily.getStreak();
-    const dust = Economy.getDust();
+    try {
+      const today = Daily.todayStr();
+      const streak = Daily.getStreak();
+      const dust = Economy.getDust();
 
-    const modes = [
-      {
-        id: 'match', name: '♾️ Infinity', desc: 'Endless match-3 madness',
-        kind: 'endless', icon: '🎮', bestKey: 'match.highScore', bestLabel: 'Best',
-      },
-      {
-        id: 'connector', name: 'Connector', desc: 'Find the 4 groups of 4',
-        kind: 'daily', icon: '🔗', bestKey: null,
-      },
-      {
-        id: 'wordle', name: 'Wordle', desc: 'Guess the 5-letter word',
-        kind: 'daily', icon: '📝', bestKey: null,
-      },
-      {
-        id: 'miniwordgrid', name: 'Word Grid', desc: 'Mini crossword puzzle',
-        kind: 'daily', icon: '🔤', bestKey: null,
-      },
-      {
-        id: 'minesweeper', name: 'Minesweeper', desc: 'Clear the minefield',
-        kind: 'endless', icon: '💣', bestKey: null,
-      },
-      {
-        id: 'watersort', name: 'Water Sort', desc: 'Sort colors into tubes',
-        kind: 'endless', icon: '🌈', bestKey: null,
-      },
-      {
-        id: 'mahjong', name: 'Mahjong', desc: 'Classic tile matching',
-        kind: 'endless', icon: '🀄', bestKey: null,
-      },
-    ];
+      const modes = [
+        {
+          id: 'match', name: '♾️ Infinity', desc: 'Endless match-3 madness',
+          kind: 'endless', icon: '🎮', bestKey: 'match.highScore', bestLabel: 'Best',
+        },
+        {
+          id: 'connector', name: 'Connector', desc: 'Find the 4 groups of 4',
+          kind: 'daily', icon: '🔗', bestKey: null,
+        },
+        {
+          id: 'wordle', name: 'Wordle', desc: 'Guess the 5-letter word',
+          kind: 'daily', icon: '📝', bestKey: null,
+        },
+        {
+          id: 'miniwordgrid', name: 'Word Grid', desc: 'Mini crossword puzzle',
+          kind: 'daily', icon: '🔤', bestKey: null,
+        },
+        {
+          id: 'minesweeper', name: 'Minesweeper', desc: 'Clear the minefield',
+          kind: 'endless', icon: '💣', bestKey: null,
+        },
+        {
+          id: 'watersort', name: 'Water Sort', desc: 'Sort colors into tubes',
+          kind: 'endless', icon: '🌈', bestKey: null,
+        },
+        {
+          id: 'mahjong', name: 'Mahjong', desc: 'Classic tile matching',
+          kind: 'endless', icon: '🀄', bestKey: null,
+        },
+      ];
 
-    grid.innerHTML = modes.map(m => {
-      const completed = m.kind === 'daily' && Daily.hasCompletedToday(m.id);
-      const lbBest    = Leaderboard.getBest(m.id);
-      let bestStr = '';
-      if (m.id === 'match') {
-        const hs = Storage.getModeField('match', 'highScore', 0);
-        if (hs) bestStr = `Best: ${hs.toLocaleString()}`;
-      } else if (lbBest) {
-        bestStr = `Best: ${lbBest.score.toLocaleString()}`;
-      }
+      grid.innerHTML = modes.map(m => {
+        const completed = m.kind === 'daily' && Daily.hasCompletedToday(m.id);
+        const lbBest    = Leaderboard.getBest(m.id);
+        let bestStr = '';
+        if (m.id === 'match') {
+          const hs = Storage.getModeField('match', 'highScore', 0);
+          if (hs) bestStr = `Best: ${hs.toLocaleString()}`;
+        } else if (lbBest) {
+          bestStr = `Best: ${lbBest.score.toLocaleString()}`;
+        }
 
-      return `<button class="hub-card${completed ? ' hub-card-done' : ''}" data-mode="${m.id}" aria-label="Play ${m.name}">
-        <div class="hub-card-icon">${m.icon}</div>
-        <div class="hub-card-name">${m.name}</div>
-        <div class="hub-card-desc">${m.desc}</div>
-        ${m.kind === 'daily' ? `<div class="hub-card-badge${completed ? ' done' : ' daily'}">
-          ${completed ? '✅ Done' : '📅 Daily'}</div>` : ''}
-        ${bestStr ? `<div class="hub-card-best">${bestStr}</div>` : ''}
-      </button>`;
-    }).join('');
+        return `<button class="hub-card${completed ? ' hub-card-done' : ''}" data-mode="${m.id}" aria-label="Play ${m.name}">
+          <div class="hub-card-icon">${m.icon}</div>
+          <div class="hub-card-name">${m.name}</div>
+          <div class="hub-card-desc">${m.desc}</div>
+          ${m.kind === 'daily' ? `<div class="hub-card-badge${completed ? ' done' : ' daily'}">
+            ${completed ? '✅ Done' : '📅 Daily'}</div>` : ''}
+          ${bestStr ? `<div class="hub-card-best">${bestStr}</div>` : ''}
+        </button>`;
+      }).join('');
 
-    grid.querySelectorAll('.hub-card').forEach(card => {
-      card.addEventListener('click', () => launchMode(card.dataset.mode));
-    });
+      grid.querySelectorAll('.hub-card').forEach(card => {
+        card.addEventListener('click', () => launchMode(card.dataset.mode));
+      });
+    } catch (e) {
+      console.error('[PuzzleHub] Error rendering hub cards:', e);
+      grid.innerHTML = '<div style="padding:24px;color:#fff;text-align:center">⚠️ Error loading games. Try refreshing.</div>';
+    }
   }
 
   // ── Launch a mode ────────────────────────────────────────────────
@@ -135,6 +140,12 @@ const App = (() => {
 
     if (modeId === 'match') {
       _showScreen('match');
+      // Lazy-init the match-3 game engine on first use
+      if (typeof initMatch3Game === 'function') {
+        initMatch3Game();
+      } else {
+        console.warn('[PuzzleHub] initMatch3Game not available — match-3 engine may not have loaded.');
+      }
       // Trigger renderer resize since canvas was hidden (0 dimensions)
       setTimeout(() => {
         if (window._game && window._game.renderer) {
@@ -394,27 +405,47 @@ const App = (() => {
 
   function init() {
     // GameStorage auto-initializes on construction; Settings/Daily are stateless
-    _applyCosmetics();
-    if (Settings.isColorblind()) document.body.classList.add('colorblind');
+    try {
+      _applyCosmetics();
+    } catch (e) { console.warn('[PuzzleHub] cosmetics error:', e); }
 
-    Economy.onChange(_updateDustDisplay);
+    try {
+      if (typeof Settings !== 'undefined' && Settings.isColorblind()) {
+        document.body.classList.add('colorblind');
+      }
+    } catch (e) { console.warn('[PuzzleHub] settings error:', e); }
+
+    try {
+      if (typeof Economy !== 'undefined') Economy.onChange(_updateDustDisplay);
+    } catch (e) { console.warn('[PuzzleHub] economy error:', e); }
 
     // Hub button listeners
-    document.getElementById('hub-settings-btn').addEventListener('click', showSettings);
-    document.getElementById('hub-stats-btn').addEventListener('click', showStats);
-    document.getElementById('hub-shop-btn').addEventListener('click', showShop);
+    const settingsBtn = document.getElementById('hub-settings-btn');
+    if (settingsBtn) settingsBtn.addEventListener('click', showSettings);
+    const statsBtn = document.getElementById('hub-stats-btn');
+    if (statsBtn) statsBtn.addEventListener('click', showStats);
+    const shopBtn = document.getElementById('hub-shop-btn');
+    if (shopBtn) shopBtn.addEventListener('click', showShop);
 
     // Match mode "back to hub" button (injected into match screen header)
     const matchBack = document.getElementById('match-back-btn');
     if (matchBack) matchBack.addEventListener('click', showHub);
 
     showHub();
-    _initDebug();
+    try { _initDebug(); } catch (e) { console.warn('[PuzzleHub] debug init error:', e); }
   }
 
   return { init, showHub, launchMode, showSettings, showStats, showShop, _onModeComplete };
 })();
 
 document.addEventListener('DOMContentLoaded', () => {
-  App.init();
+  try {
+    App.init();
+  } catch (e) {
+    console.error('[PuzzleHub] Fatal init error:', e);
+    const grid = document.getElementById('hub-cards');
+    if (grid) {
+      grid.innerHTML = '<div style="padding:24px;color:#fff;text-align:center">⚠️ Something went wrong. Please refresh the page.</div>';
+    }
+  }
 });
