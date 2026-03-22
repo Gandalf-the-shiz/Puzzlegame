@@ -6,22 +6,39 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="theme-color" content="#0d0d1a" />
-  <title>Infinity Puzzle ♾️</title>
+  <title>Puzzle Hub 🧩</title>
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
 
+<div id="screen-hub" class="app-screen">
+  <div class="hub-wrap">
+    <header class="hub-topbar">
+      <div class="hub-logo">🧩 Puzzle Hub</div>
+      <div class="hub-topbar-right">
+        <div class="hub-dust-badge" id="hub-dust">✨ 0</div>
+        <button class="icon-btn" id="hub-shop-btn" aria-label="Shop">🛍️</button>
+        <button class="icon-btn" id="hub-settings-btn" aria-label="Settings">⚙️</button>
+        <button class="icon-btn" id="hub-stats-btn" aria-label="Stats">📊</button>
+      </div>
+    </header>
+    <div class="hub-streak-bar">
+      <span id="hub-streak-text">🎮 Play daily to start a streak!</span>
+    </div>
+    <div class="hub-date" id="hub-date"></div>
+    <div class="hub-cards" id="hub-cards"></div>
+  </div>
+</div>
+
+<div id="screen-match" class="app-screen hidden">
 <div id="app">
-
-  <!-- ── Header ─────────────────────────────────────────────── -->
   <header id="header">
-    <div id="logo">♾️ Infinity</div>
-
+    <button class="btn btn-secondary btn-sm" id="match-back-btn" style="font-size:12px;padding:5px 10px;margin-right:4px;">← Hub</button>
+    <div id="logo">♾️</div>
     <div id="score-panel">
       <div id="score">0</div>
       <div id="score-label">SCORE</div>
     </div>
-
     <div id="header-right">
       <div id="high-score-row">
         <span id="high-score-label">BEST</span>
@@ -33,45 +50,30 @@
       </div>
     </div>
   </header>
-
-  <!-- ── Toolbar ────────────────────────────────────────────── -->
   <div id="toolbar">
     <button class="btn btn-secondary" id="new-game-btn">🔄 New</button>
     <button class="btn btn-icon btn-secondary" id="mute-btn" aria-label="Toggle sound">🔊</button>
   </div>
-
-  <!-- ── Combo message area ─────────────────────────────────── -->
   <div id="combo-area">
     <div id="combo" class="hidden"></div>
     <div id="combo-msg"></div>
   </div>
-
-  <!-- ── Game Canvas ────────────────────────────────────────── -->
   <div id="canvas-wrapper">
     <canvas id="game-canvas"></canvas>
   </div>
-
-</div><!-- /#app -->
-
-<!-- ── Level-up overlay (non-blocking) ───────────────────────── -->
-<div id="level-up" class="hidden" role="status" aria-live="polite"></div>
-
-<!-- ── New High Score Banner ─────────────────────────────────── -->
-<div id="new-high-banner" class="hidden" role="status" aria-live="polite">
-  🏆 NEW HIGH SCORE! 🏆
 </div>
 
-<!-- ── Start Screen ───────────────────────────────────────────── -->
+<div id="level-up" class="hidden" role="status" aria-live="polite"></div>
+<div id="new-high-banner" class="hidden" role="status" aria-live="polite">🏆 NEW HIGH SCORE! 🏆</div>
+
 <div id="start-screen" class="overlay" role="dialog" aria-label="Start screen">
   <div class="overlay-card">
     <div id="start-title">♾️ Infinity<br>Puzzle</div>
     <div id="start-subtitle">The endless match-3 madness</div>
-
     <div class="start-high-row">
       <span>🏆 Best:</span>
       <span id="start-high-score">0</span>
     </div>
-
     <div class="how-to-play">
       <h3>How to Play</h3>
       <ul>
@@ -83,19 +85,14 @@
         <li>🌈 Rainbow matches anything!</li>
       </ul>
     </div>
-
-    <button class="btn btn-primary" id="play-btn" style="width:100%;font-size:20px;padding:14px;">
-      🚀 PLAY
-    </button>
+    <button class="btn btn-primary" id="play-btn" style="width:100%;font-size:20px;padding:14px;">🚀 PLAY</button>
   </div>
 </div>
 
-<!-- ── Game Over Screen ───────────────────────────────────────── -->
 <div id="game-over" class="overlay hidden" role="dialog" aria-label="Game over">
   <div class="overlay-card">
     <div id="game-over-title">💀 Game Over!</div>
     <div id="game-over-msg">The blocks have won… this time.</div>
-
     <div class="score-summary">
       <div class="score-box">
         <div class="score-box-label">Score</div>
@@ -106,15 +103,43 @@
         <div class="score-box-value purple" id="final-high">0</div>
       </div>
     </div>
-
-    <button class="btn btn-primary" id="replay-btn" style="width:100%;font-size:18px;padding:14px;">
-      🔄 Play Again
-    </button>
+    <button class="btn btn-primary" id="replay-btn" style="width:100%;font-size:18px;padding:14px;">🔄 Play Again</button>
   </div>
 </div>
+</div>
 
-<!-- ── Scripts (order matters — dependencies first) ──────────── -->
+<div id="screen-connector"    class="app-screen hidden mode-screen"></div>
+<div id="screen-wordle"       class="app-screen hidden mode-screen"></div>
+<div id="screen-miniwordgrid" class="app-screen hidden mode-screen"></div>
+<div id="screen-minesweeper"  class="app-screen hidden mode-screen"></div>
+<div id="screen-watersort"    class="app-screen hidden mode-screen"></div>
+<div id="screen-mahjong"      class="app-screen hidden mode-screen"></div>
+<div id="screen-settings"     class="app-screen hidden mode-screen"></div>
+<div id="screen-stats"        class="app-screen hidden mode-screen"></div>
+<div id="screen-shop"         class="app-screen hidden mode-screen"></div>
+
+<!-- Shared utilities -->
 <script src="js/utils.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/settings.js"></script>
+<script src="js/daily.js"></script>
+<script src="js/economy.js"></script>
+<script src="js/leaderboard.js"></script>
+
+<!-- Data packs -->
+<script src="data/connector-puzzles.js"></script>
+<script src="data/wordle-words.js"></script>
+<script src="data/miniwordgrid-puzzles.js"></script>
+
+<!-- Game modes -->
+<script src="js/modes/connector.js"></script>
+<script src="js/modes/wordle.js"></script>
+<script src="js/modes/miniwordgrid.js"></script>
+<script src="js/modes/minesweeper.js"></script>
+<script src="js/modes/watersort.js"></script>
+<script src="js/modes/mahjong.js"></script>
+
+<!-- Existing match-3 engine -->
 <script src="js/block.js"></script>
 <script src="js/board.js"></script>
 <script src="js/score.js"></script>
@@ -124,6 +149,24 @@
 <script src="js/renderer.js"></script>
 <script src="js/input.js"></script>
 <script src="js/game.js"></script>
+
+<!-- Hub router (last) -->
+<script src="js/app.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const dateEl = document.getElementById('hub-date');
+  if (dateEl) dateEl.textContent = new Date().toLocaleDateString(undefined, { weekday:'long', month:'long', day:'numeric' });
+  function refreshStreak() {
+    const streakEl = document.getElementById('hub-streak-text');
+    if (!streakEl) return;
+    const s = Daily.getStreak();
+    streakEl.textContent = s.count > 0 ? '🔥 Daily Streak: ' + s.count + ' day' + (s.count !== 1 ? 's' : '') : '🎮 Play daily to start a streak!';
+  }
+  refreshStreak();
+  Economy.onChange(refreshStreak);
+});
+</script>
 
 </body>
 </html>
