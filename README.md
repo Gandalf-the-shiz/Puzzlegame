@@ -1,141 +1,246 @@
-# ♾️ Infinity Puzzle
+# 🧩 Puzzle Hub
 
-> **A crazy-addictive match-3 puzzle game** with daily challenges, meta-progression, power-ups, and hardcore mode — playable entirely offline via GitHub Pages.
+> A **NYT Games–style puzzle platform** combining multiple puzzle modes — playable offline via GitHub Pages.
 
 [**▶ Play Now**](https://gandalf-the-shiz.github.io/Puzzlegame/)
 
----
-
-## 🎮 Game Modes
-
-| Mode | Description |
-|---|---|
-| ♾️ **Endless** | Classic infinite match-3. Difficulty ramps up forever. |
-| 📅 **Daily Challenge** | Same seeded board for every player each day. Build streaks! |
-| 💀 **Hardcore** | Faster level ramp, more blockers, limited power-ups. |
+**No build tools · No npm · No CDN · Pure HTML/CSS/JS**
 
 ---
 
-## 📅 Daily Challenge & Streaks
+## 🎮 What Shipped
 
-- A new seeded board is generated each calendar day (consistent for every player).
-- Playing the daily challenge counts towards your **streak counter**.
-- Streaks are tracked even if you don't win — just play!
-- **Streak Milestone Rewards:**
-  | Streak | Reward |
-  |--------|--------|
-  | 3 days | 🌊 Ocean Theme + 50 💨 |
-  | 7 days | ⭐ Stars Particles + 100 💨 |
-  | 14 days | 🏆 Sports Announcer + 200 💨 |
-  | 30 days | ⚡ Neon Theme + 500 💨 |
+### Hub / Title Screen
+- NYT-style tile grid of all 7 puzzle modes
+- Shared top bar: Wizard Dust balance, Shop, Settings, Stats
+- Daily streak counter and per-mode "Done today" badges
 
----
+### Puzzle Modes
 
-## 💨 Wizard Dust & Unlocks
+| Mode | Type | Description |
+|------|------|-------------|
+| ♾️ Infinity (match-3) | Endless / Daily / Hardcore | Original match-3 with powerups |
+| 🔗 Connector | Daily | Find 4 groups of 4 words |
+| 📝 Wordle | Daily | Guess the 5-letter word |
+| 🔤 Word Grid | Daily | Mini crossword puzzle |
+| 💣 Minesweeper | Endless | Clear the minefield |
+| 🌈 Water Sort | Endless | Sort colors into tubes |
+| 🀄 Mahjong | Endless | Classic tile matching |
 
-**Wizard Dust** is the in-game currency earned by playing:
-- 1 dust per 100 score points
-- 5 dust per level-up
-- 25 bonus dust for completing the Daily Challenge
-
-### Shop Categories
-
-| Category | Items |
-|---|---|
-| 🎨 **Themes** | Classic, 🌊 Ocean (100💨), 🌅 Sunset (150💨), 🌲 Forest (200💨), ⚡ Neon (300💨) |
-| ✨ **Particles** | Classic, ⭐ Stars (100💨), 🎉 Confetti (200💨), 💫 Sparkles (300💨) |
-| 📣 **Announcers** | 🧙 Wizard, 🏆 Sports (100💨), 🤖 Robot (200💨) |
-
-All items are **purely cosmetic** — no pay-to-win.
+### Match-3 (♾️ Infinity) Features
+| Feature | Details |
+|---------|---------|
+| ♾️ Endless | Classic infinite match-3 |
+| 📅 Daily Challenge | Same seeded board every day — build streaks! |
+| 💀 Hardcore | Faster ramp, more blockers, fewer power-ups |
+| ⚡ Power-ups | 💣 Bomb · 🔀 Shuffle · ↩️ Undo (limited charges) |
+| 🏆 Leaderboard | Local top-10 per mode |
 
 ---
 
-## ⚡ Power-ups
+## 🚀 How to Run
 
-Three power-ups per run with limited charges (use wisely!):
+### GitHub Pages
+Just push to `main` — GitHub Pages serves `index.html` automatically.
 
-| Power-up | Description | Charges (Endless/Daily) | Charges (Hardcore) |
-|---|---|---|---|
-| 💣 **Bomb Blast** | Tap to destroy a 3×3 area | 1 | 0 |
-| 🔀 **Shuffle** | Re-roll every block on the board | 1 | 1 |
-| ↩️ **Undo** | Revert to the board before your last move | 2 | 1 |
-
-A confirmation prompt appears before each use to prevent accidents.
-
----
-
-## 🏆 Leaderboards
-
-- **Local leaderboard** (top 10) stored in your browser for each mode.
-- Shown on the Game Over screen with your current rank highlighted.
-- No backend required — fully private and offline.
-
----
-
-## ⚙️ Settings
-
-| Setting | Default |
-|---|---|
-| 🔊 Sound Effects | On |
-| 🎵 Background Music | Off |
-| 📳 Haptics / Vibration | On |
-| 👁️ Colorblind Palette | Off |
-
----
-
-## 🏗️ Architecture
-
-```
-js/
-  storage.js    — Versioned localStorage save/load with v1 migration
-  settings.js   — Player preferences
-  daily.js      — Deterministic daily seed (seeded PRNG) + streak logic
-  unlocks.js    — Cosmetic catalogue (themes, particles, announcers)
-  powerups.js   — Powerup definitions + run-time charge management
-  leaderboard.js— Top-10 leaderboard per mode
-  score.js      — Scoring, combos, Wizard Dust accumulation
-  levels.js     — Progressive difficulty (Endless & Hardcore configs)
-  particles.js  — Particle effects with 4 style modes
-  audio.js      — Procedural SFX + optional background music
-  renderer.js   — Canvas rendering with theme-aware block colours
-  board.js      — Grid logic (matching, gravity, move validation)
-  block.js      — Block types and behaviour
-  input.js      — Touch + mouse input (tap & swipe)
-  game.js       — Main controller: modes, power-ups, overlays, loop
-css/
-  style.css     — Mobile-first responsive UI
-index.html      — Single-page app shell
+### Locally
+```bash
+open index.html
+# OR serve with any static server:
+python3 -m http.server 8080
 ```
 
-### Save Schema (localStorage `puzzlegame.save`)
+### Debug mode
+- `?debug=1` — shows debug panel
+- `?devDate=YYYY-MM-DD` — override today's date for testing daily puzzles
 
-```json
-{
-  "saveVersion": 2,
-  "highScores":   { "endless": 0, "daily": 0, "hardcore": 0 },
-  "bestLevel":    1,
-  "dust":         0,
-  "dailyStreak":  { "count": 0, "lastDate": null },
-  "unlockedItems": ["theme_default", "particles_classic", "announcer_wizard"],
-  "equippedItems": { "theme": "theme_default", "particles": "particles_classic", "announcer": "announcer_wizard" },
-  "settings":     { "soundOn": true, "musicOn": false, "hapticsOn": true, "colorblindMode": false },
-  "leaderboards": { "endless": [], "daily": [], "hardcore": [] }
+---
+
+## 📁 Architecture
+
+```
+Puzzlegame/
+├── index.html                     ← Single-page hub + all mode screens
+├── css/style.css                  ← All styles (hub, modes, themes)
+├── js/
+│   ├── utils.js                   ← Match-3 constants (unchanged)
+│   ├── block.js / board.js        ← Match-3 engine (unchanged)
+│   ├── storage.js                 ← Versioned localStorage (single JSON blob)
+│   ├── settings.js                ← Shared settings (SFX, haptics, colorblind)
+│   ├── daily.js                   ← Daily seeds + streak tracking
+│   ├── economy.js                 ← Wizard Dust economy
+│   ├── unlocks.js                 ← Match-3 cosmetics catalogue
+│   ├── powerups.js                ← Match-3 power-up definitions
+│   ├── leaderboard.js             ← Local top-10 per mode
+│   ├── app.js                     ← Hub router + screen management
+│   ├── modes/
+│   │   ├── connector.js
+│   │   ├── wordle.js
+│   │   ├── miniwordgrid.js
+│   │   ├── minesweeper.js
+│   │   ├── watersort.js
+│   │   └── mahjong.js
+│   └── (match-3 engine files)
+│       score.js / levels.js / particles.js / audio.js
+│       renderer.js / input.js / game.js
+└── data/
+    ├── connector-puzzles.js       ← 10 hand-authored Connector puzzles
+    ├── wordle-words.js            ← 200+ answer words + valid guesses
+    └── miniwordgrid-puzzles.js    ← 5 verified 5×5 mini crosswords
+```
+
+---
+
+## 🔌 Mode Interface
+
+Every hub mode implements:
+```js
+const MyMode = (() => {
+  function mount(rootEl, ctx) { /* render into rootEl; use ctx.goHub(), ctx.onModeComplete() */ }
+  function unmount() { /* clean up timers/listeners */ }
+  function start(opts = {}) { /* opts: { daily, seed, difficulty, ... } */ }
+  return { id: 'mymode', mount, unmount, start };
+})();
+```
+`ctx.onModeComplete` expects: `{ modeId, score, dustEarned }`
+
+---
+
+## 💾 Save Schema (localStorage)
+
+**One key:** `puzzlegame.save` (JSON, schema v2)
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `saveVersion` | int | Schema version (2) |
+| `highScores` | object | `{ endless, daily, hardcore }` for match-3 |
+| `bestLevel` | int | Match-3 best level |
+| `dust` | int | Wizard Dust balance |
+| `dailyStreak` | object | `{ count, lastDate, perMode: { modeId: date } }` |
+| `unlockedItems` | string[] | Match-3 unlock IDs (e.g. `'theme_ocean'`) |
+| `equippedItems` | object | Match-3 equipped items |
+| `settings` | object | `{ soundOn, musicOn, hapticsOn, colorblindMode }` |
+| `leaderboards` | object | Match-3 leaderboards `{ endless, daily, hardcore }` |
+| `modeData` | object | Hub mode state (keyed by modeId) |
+| `hubLb` | object | Hub mode leaderboards (keyed by modeId) |
+| `hubCosmetics` | object | Hub shop unlocks + equipped `{ unlocks, equipped }` |
+
+**Legacy keys migrated on first load:**
+- `infinityPuzzle_highScore` → `highScores.endless`
+- `infinityPuzzle_bestLevel` → `bestLevel`
+- `infinityPuzzle_soundOn`   → `settings.soundOn`
+
+---
+
+## 📅 Daily Seed Logic
+
+```js
+// In daily.js — hub mode seeds (Mulberry32)
+function seedForDate(dateStr, modeId) {
+  const str = dateStr + ':' + modeId;
+  let hash = 5381;
+  for (let i = 0; i < str.length; i++) {
+    hash = ((hash << 5) + hash) + str.charCodeAt(i);
+    hash |= 0;
+  }
+  return Math.abs(hash);
 }
+
+// Match-3 seed (FNV-1a on date string)
+function dateToSeed(dateStr) { ... }
 ```
 
-High scores from the original game (v1 `infinityPuzzle_highScore` key) are automatically migrated to the new format.
+- Same date + mode → same seed (deterministic)
+- `?devDate=YYYY-MM-DD` overrides today's date for testing
+- Retries unlimited; streak credit once per day per mode
 
 ---
 
-## 📱 GitHub Pages / Offline Play
+## 💨 Wizard Dust & Shop
 
-- Works on **mobile Safari, Chrome, Firefox** — no installation required.
-- Fully offline after first load (no CDN, no server).
-- Safe-area insets for notched iPhones/Androids.
-- Prevents accidental scroll/zoom on the game canvas.
+All modes earn **Wizard Dust**. Hub shop (`app.js`) handles:
+- Cosmetic items: 3 themes, 2 particle styles, 2 UI borders
+- Match-3 in-game shop (`unlocks.js`): themes, particles, announcers
+- `Economy` module manages dust earn rates per mode
 
 ---
 
-## �� Developer Debug
+## ⚡ Match-3 Power-ups
 
-Set `const DEBUG = true;` in `js/daily.js`, then add `?devDate=YYYY-MM-DD` to the URL to test daily challenge for any specific date.
+| Power-up | Description | Endless/Daily | Hardcore |
+|----------|-------------|---------------|----------|
+| 💣 Bomb Blast | Destroy 3×3 area | 1 charge | 0 |
+| 🔀 Shuffle | Re-roll board | 1 charge | 1 |
+| ↩️ Undo | Revert last move | 2 charges | 1 |
+
+---
+
+## ➕ How to Add a New Puzzle Mode
+
+1. Create `js/modes/mymode.js` implementing the Mode interface above
+2. Add `<div id="screen-mymode" class="app-screen hidden mode-screen"></div>` to `index.html`
+3. Load the script before `js/app.js`
+4. Add to `modeMap` in `app.js`
+5. Add a hub card entry in `_renderHubCards()` in `app.js`
+
+---
+
+## ⚠️ Known Limitations / TODO
+
+### Content
+- [ ] Expand Wordle word list (200 → 2000+ answers)
+- [ ] Add more Connector puzzle packs (currently 10)
+- [ ] Add more Mini Word Grid puzzles (currently 5; need 30+ for daily variety)
+
+### Gameplay
+- [ ] Wordle: hard mode (must use revealed letters)
+- [ ] Wordle: save in-progress game state (refresh = lost progress)
+- [ ] Minesweeper: chord mechanic (tap number to auto-clear matching flags)
+- [ ] Water Sort: validate levels are always solvable
+- [ ] Mahjong: validate boards are always solvable; more layout templates
+
+### Integration
+- [ ] Match-3 Infinity: call `Economy.rewardMatch()` from `game.js` on game over
+- [ ] Match-3 daily challenge: use `DailyChallenge.completeDaily()` for streak credit
+
+### Technical
+- [ ] Service worker for offline play (PWA)
+- [ ] PWA manifest for "Add to Home Screen"
+- [ ] Water Sort: animated pour effect (currently instant)
+
+---
+
+## 🤖 Copilot Handoff
+
+**Architecture:** Single static web app, no build tools. All JS uses plain `<script>` tags and globals. Script load order in `index.html` is critical.
+
+**Key globals:**
+| Global | File | Used by |
+|--------|------|---------|
+| `GameStorage` | `storage.js` | match-3 game |
+| `Storage` | `storage.js` | alias for `GameStorage` (hub modes) |
+| `Settings` | `settings.js` | all modes |
+| `DailyChallenge` | `daily.js` | match-3 game |
+| `Daily` | `daily.js` | alias for `DailyChallenge` (hub modes) |
+| `Economy` | `economy.js` | all modes |
+| `Leaderboard` | `leaderboard.js` | all modes |
+| `App` | `app.js` | hub router |
+
+**Script load order:**
+```
+utils.js → block.js → board.js → storage.js → settings.js → daily.js
+→ economy.js → unlocks.js → powerups.js → leaderboard.js
+→ data/*.js → js/modes/*.js → score.js → levels.js → particles.js
+→ audio.js → renderer.js → input.js → game.js → app.js
+```
+
+**Where to continue:**
+1. Expand word lists: add 2000+ words to `data/wordle-words.js`
+2. Add more Connector puzzles to `data/connector-puzzles.js`
+3. Integrate `Economy.rewardMatch()` call in `game.js` `_triggerGameOver()`
+4. Water Sort solvability check in `watersort.js` `_generateLevel()`
+5. PWA: add `manifest.json` and `sw.js`
+
+---
+
+*Built with ❤️ — pure vanilla HTML, CSS, and JavaScript. No dependencies.*
