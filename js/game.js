@@ -242,23 +242,23 @@ Game.prototype._startGame = function (mode) {
     this.board = new Board();
   }
 
+  // ── Resolve canvas reference once ──────────────────────────────
+  if (!this.canvas) {
+    this.canvas = document.getElementById('game-canvas');
+  }
+
   // ── Renderer (create once, update board ref on subsequent runs) ─
   if (!this.renderer) {
-    this.renderer = new Renderer(this.canvas || document.getElementById('game-canvas'), this.board, this.particles);
+    this.renderer = new Renderer(this.canvas, this.board, this.particles);
   } else {
     this.renderer.board     = this.board;
     this.renderer.particles = this.particles;
     this.renderer.resize();
   }
 
-  // Ensure canvas reference is stored for later
-  if (!this.canvas) {
-    this.canvas = document.getElementById('game-canvas');
-  }
-
   // ── Input (create once; reuse to avoid duplicate listeners) ─────
   if (!this.input) {
-    this.input = new InputHandler(this.canvas || document.getElementById('game-canvas'), this.renderer);
+    this.input = new InputHandler(this.canvas, this.renderer);
   }
   this.input.onCellTap = function (r, c) { self._onCellTap(r, c); };
   this.input.enable();
