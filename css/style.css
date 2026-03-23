@@ -1238,6 +1238,7 @@ html, body {
   font-weight: 900;
   color: #fff;
   background: var(--surface);
+  perspective: 250px;
   transition: background 0.3s, border-color 0.3s, transform 0.1s;
 }
 
@@ -1294,6 +1295,233 @@ html, body {
   padding: 0 12px 12px;
   text-align: center;
 }
+
+/* ── Wordle header additions ────────────────────────────────────── */
+.wrd-title-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+.wrd-puzzle-info {
+  font-size: 12px;
+  color: rgba(255,255,255,0.5);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+.wrd-header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.wrd-stats-btn {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  transition: background 0.15s;
+  line-height: 1;
+}
+.wrd-stats-btn:hover { background: rgba(255,255,255,0.1); }
+
+/* ── Mode buttons (Daily / Practice) ────────────────────────────── */
+.wrd-mode-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  padding: 4px 12px 0;
+}
+.wrd-mode-btn {
+  padding: 6px 16px;
+  border-radius: 20px;
+  border: 2px solid rgba(255,255,255,0.2);
+  background: transparent;
+  color: rgba(255,255,255,0.6);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: var(--font);
+}
+.wrd-mode-btn.active,
+.wrd-mode-btn:hover {
+  border-color: var(--accent);
+  color: #fff;
+  background: rgba(139,92,246,0.15);
+}
+
+/* ── Hard mode toggle ───────────────────────────────────────────── */
+.wrd-hard-row {
+  display: flex;
+  justify-content: center;
+  padding: 4px 12px 0;
+}
+.wrd-hard-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.65);
+  user-select: none;
+}
+.wrd-hard-checkbox {
+  accent-color: var(--accent);
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+.wrd-hard-text { transition: color 0.2s; }
+.wrd-hard-checkbox:checked + .wrd-hard-text { color: #a78bfa; }
+
+/* ── Tile flip animation ────────────────────────────────────────── */
+@keyframes wrdFlip {
+  0%   { transform: rotateX(0deg); }
+  50%  { transform: rotateX(-90deg); }
+  100% { transform: rotateX(0deg); }
+}
+.wrd-cell.wrd-flip {
+  animation: wrdFlip 350ms ease-in-out forwards;
+}
+
+/* ── Cell pop animation when typing ────────────────────────────── */
+@keyframes wrdPop {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.12); }
+  100% { transform: scale(1); }
+}
+.wrd-cell.wrd-pop {
+  animation: wrdPop 100ms ease-out;
+}
+
+/* ── Win bounce / celebration ───────────────────────────────────── */
+@keyframes wrdBounce {
+  0%,100% { transform: translateY(0); }
+  30%      { transform: translateY(-14px); }
+  60%      { transform: translateY(-6px); }
+}
+.wrd-cell.wrd-bounce {
+  animation: wrdBounce 600ms ease-in-out;
+}
+
+/* ── Result puzzle label ────────────────────────────────────────── */
+.wrd-result-puzzle {
+  font-size: 13px;
+  color: rgba(255,255,255,0.6);
+  margin-top: 2px;
+  font-weight: 600;
+}
+
+/* ── Stats overlay panel ────────────────────────────────────────── */
+.wrd-stats {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 400;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.wrd-stats.hidden { display: none; }
+
+.wrd-stats-panel {
+  background: var(--surface);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 16px;
+  padding: 20px;
+  width: 100%;
+  max-width: 340px;
+  color: #fff;
+}
+.wrd-stats-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 16px;
+  font-weight: 800;
+  margin-bottom: 16px;
+}
+.wrd-stats-close {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.6);
+  font-size: 18px;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 6px;
+  transition: background 0.15s;
+}
+.wrd-stats-close:hover { background: rgba(255,255,255,0.1); }
+
+.wrd-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 20px;
+}
+.wrd-stat {
+  text-align: center;
+}
+.wrd-stat-num {
+  font-size: 26px;
+  font-weight: 900;
+  line-height: 1.1;
+}
+.wrd-stat-lbl {
+  font-size: 10px;
+  color: rgba(255,255,255,0.55);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.wrd-dist-title {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255,255,255,0.55);
+  margin-bottom: 10px;
+}
+.wrd-dist {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.wrd-dist-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+}
+.wrd-dist-label {
+  width: 14px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.7);
+  flex-shrink: 0;
+  text-align: right;
+}
+.wrd-dist-bar-wrap {
+  flex: 1;
+}
+.wrd-dist-bar {
+  background: #374151;
+  border-radius: 3px;
+  padding: 2px 6px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+  min-width: 24px;
+  text-align: right;
+  transition: width 0.4s ease;
+}
+
+/* Colorblind: keep stats bar neutral (not color-coded) */
+body.colorblind .wrd-dist-bar { background: #2563eb; }
 
 /* ════════════════════════════════════════════════════════════════
    MINI WORD GRID MODE
